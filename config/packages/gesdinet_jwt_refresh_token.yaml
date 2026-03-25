@@ -1,0 +1,5 @@
+gesdinet_jwt_refresh_token:
+    ttl: 2592000
+    single_use: false
+    token_parameter_name: refresh_token
+    refresh_token_class: Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken

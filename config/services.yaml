@@ -21,3 +21,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\WebAuthnService:
+        arguments:
+            $appDomain: '%env(APP_DOMAIN)%'
+            $rpName: '%env(WEBAUTHN_RP_NAME)%'
