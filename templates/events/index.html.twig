@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+{% block title %}Events — Mic Events{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .filter-section { background: #f8f9fa; padding: 2rem 0; margin-bottom: 2rem; }
+    .filter-buttons { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+    .filter-btn {
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #003161;
+        background: white;
+        color: #003161;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+        font-family: inherit;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .filter-btn:hover, .filter-btn.active {
+        background: #003161; color: #C7953E;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,49,97,0.2);
+    }
+    .seats-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #28a745;
+        color: white;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-top: 8px;
+    }
+    .seats-badge.full { background: #dc3545; }
+</style>
+{% endblock %}
+
+{% block body %}
+<main style="padding: 3rem 0;">
+    <div class="container">
+        <h1 class="section-title"> All Events</h1>
+
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success"> {{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger"> {{ message }}</div>
+        {% endfor %}
+
+        {% if events is empty %}
+            <div style="text-align:center; padding: 4rem; color: #666;">
+                <i class="fas fa-calendar-times" style="font-size:4rem; color:#ddd; display:block; margin-bottom:1rem;"></i>
+                <h3>No events available at the moment.</h3>
+            </div>
+        {% else %}
+            <div class="events-grid" id="eventsGrid">
+                {% for event in events %}
+                <article class="event-card" data-category="conference">
+                    {% if event.image %}
+                        <img src="{{ asset(event.image) }}" alt="{{ event.title }}">
+                    {% else %}
+                        <div style="width:100%; height:200px; background: linear-gradient(135deg, #003161, #004080); display:flex; align-items:center; justify-content:center;">
+                            <i class="fas fa-calendar-alt" style="font-size:3rem; color:#C7953E;"></i>
+                        </div>
+                    {% endif %}
+                    <div class="event-card-body">
+                        <span class="event-badge">
+                             Event
+                        </span>
+                        <h3 style="margin-bottom:0.5rem; color:#003161;">{{ event.title }}</h3>
+                        <p class="meta"><i class="fas fa-calendar"></i> {{ event.date|date('d M Y H:i') }}</p>
+                        <p class="meta"><i class="fas fa-map-marker-alt"></i> {{ event.location }}</p>
+                        <p style="color:#666; font-size:0.9rem; margin:0.5rem 0;">
+                            {{ event.description|slice(0, 80) }}...
+                        </p>
+                        <span class="seats-badge {{ event.availableSeats <= 0 ? 'full' : '' }}">
+                            {{ event.availableSeats > 0 ? event.availableSeats ~ ' seats available' : 'Full' }}
+                        </span>
+                        <div style="display:flex; gap:1rem; margin-top:1rem;">
+                            <a href="{{ path('event_detail', {id: event.id}) }}" class="btn btn-primary" style="flex:1; justify-content:center;">
+                                View Details
+                            </a>
+                            {% if event.availableSeats > 0 %}
+                                {% if app.user %}
+                                    <a href="{{ path('event_reserve', {id: event.id}) }}" class="btn btn-secondary" style="flex:1; justify-content:center;">
+                                        Reserve
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('user_login') }}" class="btn btn-secondary" style="flex:1; justify-content:center;">
+                                        Login to Reserve
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const filter = this.dataset.filter;
+        document.querySelectorAll('.event-card').forEach(card => {
+            card.style.display = (filter === 'all' || card.dataset.category === filter) ? 'block' : 'none';
+        });
+    });
+});
+</script>
+{% endblock %}

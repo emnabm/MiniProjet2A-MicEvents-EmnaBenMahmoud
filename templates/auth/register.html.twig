@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Register — Mic Events</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background-image: url('{{ asset("images/hero-image.png") }}');
+            background-size: cover; background-position: center;
+            font-family: 'Gill Sans', Calibri, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh;
+        }
+        body::before { content:''; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:0; }
+        .screen {
+            position: relative; z-index: 1;
+            display: flex; flex-direction: column; align-items: center; gap: 15px;
+            width: 90%; max-width: 420px;
+            padding: 35px 30px; border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,49,97,0.3);
+            animation: fadeIn 0.9s ease;
+        }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .logo-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px; width:40px; height:40px; }
+        .logo-grid span { background:#C7953E; border-radius:3px; }
+        .brand-name { color:#C7953E; font-size:1.8rem; font-weight:bold; }
+        h2 { color:rgba(255,255,255,0.8); font-size:1.1rem; font-weight:400; }
+        .alert-error { background:#f8d7da; color:#721c24; padding:0.8rem 1rem; border-radius:8px; border-left:4px solid #dc3545; width:100%; font-size:0.9rem; }
+        input {
+            padding: 14px 16px; width: 100%;
+            border: none; border-radius: 10px;
+            background: rgba(255,255,255,0.2); color: white; font-size: 15px;
+            font-family: inherit; transition: all 0.3s;
+        }
+        input::placeholder { color:rgba(255,255,255,0.6); }
+        input:focus { outline:none; background:rgba(255,255,255,0.3); box-shadow:0 0 12px rgba(255,255,255,0.2); }
+        .btn-submit {
+            padding: 14px; width: 100%;
+            border: none; border-radius: 28px;
+            background: #C7953E; color: #003161;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+            letter-spacing: 1px; text-transform: uppercase;
+            font-family: inherit; transition: all 0.3s;
+        }
+        .btn-submit:hover { transform:scale(1.03); box-shadow:0 0 15px rgba(199,149,62,0.5); }
+        .divider { display:flex; align-items:center; gap:10px; width:100%; color:rgba(255,255,255,0.4); font-size:0.85rem; }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.2); }
+        .passkey-row { display:flex; gap:8px; width:100%; }
+        .passkey-row input { border-radius:10px; }
+        .btn-passkey {
+            padding: 14px 16px; white-space:nowrap;
+            border: none; border-radius: 10px;
+            background: rgba(199,149,62,0.3); color: #C7953E;
+            font-size: 13px; cursor: pointer;
+            font-family: inherit; transition: all 0.3s;
+            border: 1px solid rgba(199,149,62,0.5);
+        }
+        .btn-passkey:hover { background:rgba(199,149,62,0.5); }
+        a { color:rgba(255,255,255,0.6); text-decoration:none; font-size:0.9rem; }
+        a:hover { color:#C7953E; }
+        a span { color:#C7953E; }
+    </style>
+</head>
+<body>
+    <div class="screen">
+        <div class="logo-grid"><span></span><span></span><span></span><span></span></div>
+        <div class="brand-name">Mic Events</div>
+        <h2>Create your account</h2>
+
+        {% if error %}
+            <div class="alert-error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" style="width:100%; display:flex; flex-direction:column; gap:12px;">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="password_confirm" placeholder="Confirm password" required>
+            <button type="submit" class="btn-submit">
+               Create Account
+            </button>
+        </form>
+
+        <div class="divider">or register with passkey</div>
+
+        <div class="passkey-row">
+            <input type="email" id="passkey-email" placeholder="Your email for passkey">
+            <button onclick="registerPasskey()" class="btn-passkey">
+                 Passkey
+            </button>
+        </div>
+
+        <a href="{{ path('user_login') }}">
+            Already have an account? <span>Login</span>
+        </a>
+    </div>
+
+    <script src="{{ asset('js/auth.js') }}"></script>
+</body>
+</html>

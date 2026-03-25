@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ event.title }} — Mic Events{% endblock %}
+
+{% block body %}
+<main class="container" style="padding: 3rem 1rem;">
+    <div style="max-width: 900px; margin: 0 auto;">
+
+        {% if event.image %}
+            <img src="{{ asset(event.image) }}" alt="{{ event.title }}"
+                 style="width:100%; height:400px; object-fit:cover; border-radius:10px; margin-bottom:2rem;">
+        {% else %}
+            <div style="width:100%; height:300px; background:linear-gradient(135deg,#003161,#004080); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:2rem;">
+                <i class="fas fa-calendar-alt" style="font-size:5rem; color:#C7953E;"></i>
+            </div>
+        {% endif %}
+
+        <span class="event-badge" style="margin-bottom:1rem;">
+             Event
+        </span>
+
+        <h1 style="color:#003161; font-size:2.5rem; margin:1rem 0;">{{ event.title }}</h1>
+
+        <div style="display:flex; gap:2rem; margin:1.5rem 0; color:#666; flex-wrap:wrap;">
+            <p> {{ event.date|date('F d, Y H:i') }}</p>
+            <p> {{ event.location }}</p>
+            <p> {{ event.seats }} seats total</p>
+            <p> {{ event.availableSeats }} available</p>
+        </div>
+
+        <div style="margin:2rem 0; background:white; padding:2rem; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+            <h3 style="color:#003161; margin-bottom:1rem;"> Description</h3>
+            <p style="line-height:1.8; color:#555;">{{ event.description }}</p>
+        </div>
+
+        <div style="background:white; padding:2rem; border-radius:10px; border:2px solid #C7953E; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+    <h3 style="color:#003161; margin-bottom:1.5rem;"> Reserve Your Spot</h3>
+
+    {% if event.availableSeats > 0 %}
+        {% if app.user %}
+            <a href="{{ path('event_reserve', {id: event.id}) }}" class="btn btn-primary" style="width:100%; justify-content:center; font-size:1.1rem; padding:1rem;">
+                Reserve Now
+            </a>
+        {% else %}
+            <a href="{{ path('user_login') }}" class="btn btn-primary" style="width:100%; justify-content:center; font-size:1.1rem; padding:1rem;">
+                Login to Reserve
+            </a>
+            <p style="text-align:center; margin-top:1rem; color:#666; font-size:0.9rem;">
+                No account? <a href="{{ path('user_register') }}" style="color:#C7953E; font-weight:600;">Register here</a>
+            </p>
+        {% endif %}
+    {% else %}
+        <button class="btn" style="width:100%; background:#dc3545; color:white; cursor:not-allowed; justify-content:center;" disabled>
+            This event is fully booked
+        </button>
+    {% endif %}
+    </div>
+
+        <a href="{{ path('events_list') }}" class="btn btn-secondary" style="margin-top:2rem;">
+             Back to Events
+        </a>
+    </div>
+</main>
+{% endblock %}

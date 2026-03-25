@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin Dashboard — Mic Events{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif; background: #f5f5f5; }
+
+        .admin-header {
+            background: #003161;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            height: 60px;
+        }
+        .admin-header h1 {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 1.3rem;
+        }
+        .brand-icon {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 3px; width: 26px; height: 26px;
+        }
+        .brand-icon span { background: #C7953E; border-radius: 2px; }
+        .admin-header .user-info {
+            display: flex; align-items: center; gap: 15px;
+        }
+        .admin-header .user-info span { color: #C7953E; font-size: 0.9rem; }
+
+        /* SIDEBAR */
+        .burger-menu {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0; top: 60px;
+            width: 260px;
+            height: calc(100vh - 60px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 999;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem 1.5rem;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+        .menu-item i { width: 20px; color: #003161; }
+        .menu-item:hover, .menu-item.active {
+            background: #003161;
+            color: white;
+        }
+        .menu-item:hover i, .menu-item.active i { color: #C7953E; }
+        .menu-divider { border: none; border-top: 1px solid #f0f0f0; margin: 0.5rem 0; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 60px;
+            padding: 2rem;
+            min-height: calc(100vh - 60px);
+        }
+
+        .page-title {
+            color: #003161;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* STAT CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.8rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid #C7953E;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .stat-card i { font-size: 2rem; color: #003161; margin-bottom: 0.8rem; }
+        .stat-card h3 { color: #666; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .stat-card .number { font-size: 2.5rem; color: #003161; font-weight: bold; }
+
+        .table-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .table-card-header {
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .table-card-header h4 { color: #003161; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .table-container { max-height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { position: sticky; top: 0; z-index: 10; }
+        th {
+            background: #003161;
+            color: #C7953E;
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        td { padding: 0.8rem 1rem; border-bottom: 1px solid #f5f5f5; font-size: 0.9rem; color: #444; }
+        tr:hover td { background: #f0f4f8; }
+        tr:last-child td { border-bottom: none; }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: #003161; color: #C7953E; font-weight: 600; }
+        .btn-primary:hover { background: #004080; transform: translateY(-1px); }
+        .btn-warning { background: #C7953E; color: #003161; font-weight: 600; }
+        .btn-warning:hover { background: #b88535; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-info:hover { background: #138496; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-new {
+            background: #C7953E;
+            color: #003161;
+            font-weight: 700;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .alert { padding: 0.8rem 1rem; border-radius: 5px; margin-bottom: 1rem; border-left: 4px solid; display: flex; align-items: center; gap: 8px; }
+        .alert-success { background: #d4edda; color: #155724; border-color: #28a745; }
+        .alert-danger { background: #f8d7da; color: #721c24; border-color: #dc3545; }
+
+        .empty-state { text-align: center; padding: 3rem; color: #999; }
+        .empty-state i { font-size: 3rem; color: #ddd; display: block; margin-bottom: 1rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; color: #003161; font-weight: 600; font-size: 0.95rem; }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #003161;
+            box-shadow: 0 0 0 2px rgba(0,49,97,0.1);
+        }
+        textarea.form-control { resize: vertical; }
+
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-row.full { grid-template-columns: 1fr; }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card h2 { color: #003161; margin-bottom: 1.5rem; font-size: 1.5rem; }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .burger-menu { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+<div class="admin-header">
+    <h1>
+        <div class="brand-icon">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        Mic Events — Admin
+    </h1>
+    <div class="user-info">
+        <span> {{ app.user ? app.user.getUserIdentifier() : 'Admin' }}</span>
+        <a href="{{ path('admin_logout') }}" style="color:#C7953E; text-decoration:none; font-size:0.9rem;">
+             Logout
+        </a>
+    </div>
+</div>
+
+<div class="burger-menu">
+    <a href="{{ path('admin_dashboard') }}" class="menu-item {% if 'admin_dashboard' in app.request.attributes.get('_route') %}active{% endif %}">
+         Dashboard
+    </a>
+    <a href="{{ path('admin_events') }}" class="menu-item {% if 'admin_events' in app.request.attributes.get('_route') %}active{% endif %}">
+         Events
+    </a>
+    <a href="{{ path('admin_event_new') }}" class="menu-item {% if 'admin_event_new' in app.request.attributes.get('_route') %}active{% endif %}">
+         New Event
+    </a>
+    <hr class="menu-divider">
+    <a href="{{ path('home') }}" class="menu-item">
+         View Site
+    </a>
+    <a href="{{ path('admin_logout') }}" class="menu-item">
+         Logout
+    </a>
+</div>
+
+<div class="main-content">
+
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success"> {{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger"> {{ message }}</div>
+    {% endfor %}
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+</body>
+</html>
