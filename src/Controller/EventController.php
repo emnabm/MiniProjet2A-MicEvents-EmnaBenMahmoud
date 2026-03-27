@@ -24,7 +24,7 @@ class EventController extends AbstractController
     {
         $event = $eventRepository->find($id);
         if (!$event) {
-            throw $this->createNotFoundException('Événement non trouvé');
+            throw $this->createNotFoundException('Event not found');
         }
         return $this->render('events/show.html.twig', ['event' => $event]);
     }
@@ -43,11 +43,11 @@ class EventController extends AbstractController
 
         $event = $eventRepository->find($id);
         if (!$event) {
-            throw $this->createNotFoundException('Événement non trouvé');
+            throw $this->createNotFoundException('Event not found');
         }
 
         if ($event->getAvailableSeats() <= 0) {
-            $this->addFlash('error', 'Plus de places disponibles.');
+            $this->addFlash('error', 'No more available places');
             return $this->redirectToRoute('event_detail', ['id' => $id]);
         }
 

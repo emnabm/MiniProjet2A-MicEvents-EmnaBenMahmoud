@@ -76,7 +76,7 @@ class AdminController extends AbstractController
             $em->persist($event);
             $em->flush();
 
-            $this->addFlash('success', 'Événement créé !');
+            $this->addFlash('success', 'Event created !');
             return $this->redirectToRoute('admin_dashboard');
         }
 
@@ -106,7 +106,7 @@ class AdminController extends AbstractController
             }
 
             $em->flush();
-            $this->addFlash('success', 'Événement modifié.');
+            $this->addFlash('success', 'Event updated');
             return $this->redirectToRoute('admin_dashboard');
         }
 
@@ -120,7 +120,7 @@ class AdminController extends AbstractController
         if ($event) {
             $em->remove($event);
             $em->flush();
-            $this->addFlash('success', 'Événement supprimé.');
+            $this->addFlash('success', 'Event deleted successfully.');
         }
         return $this->redirectToRoute('admin_dashboard');
     }
@@ -139,7 +139,7 @@ class AdminController extends AbstractController
     {
         $existing = $em->getRepository(Admin::class)->findOneBy(['username' => 'admin']);
         if ($existing) {
-            return new Response('Admin existe déjà !');
+            return new Response('Admin already exists !');
         }
 
         $admin = new Admin();
@@ -148,6 +148,6 @@ class AdminController extends AbstractController
         $em->persist($admin);
         $em->flush();
 
-        return new Response('Admin créé ! Username: admin / Password: admin2026');
+        return new Response('Admin created ! Username: admin / Password: admin2026');
     }
 }

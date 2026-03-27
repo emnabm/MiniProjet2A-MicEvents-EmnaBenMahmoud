@@ -2,40 +2,214 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Réservations — {{ event.title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Reservations — {{ event.title }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif; background: #f5f5f5; }
+        .admin-header {
+            background: #003161; color: white;
+            padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: fixed; top:0; left:0; right:0; height:60px;
+            z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .admin-header h1 { display:flex; align-items:center; gap:12px; font-size:1.3rem; }
+        .brand-icon { display:grid; grid-template-columns:1fr 1fr; gap:3px; width:26px; height:26px; }
+        .brand-icon span { background:#C7953E; border-radius:2px; }
+        .user-info { display:flex; align-items:center; gap:15px; }
+        .user-info span { color:#C7953E; font-size:0.9rem; }
+        .user-info a { color:#C7953E; text-decoration:none; font-size:0.9rem; }
+        .burger-menu {
+            position: fixed; left:0; top:60px;
+            width:260px; height:calc(100vh - 60px);
+            background:white; box-shadow:2px 0 10px rgba(0,0,0,0.1);
+            overflow-y:auto; z-index:999;
+        }
+        .menu-item {
+            display:flex; align-items:center; gap:12px;
+            padding:1rem 1.5rem; color:#333;
+            text-decoration:none; border-bottom:1px solid #f0f0f0;
+            transition:all 0.3s; font-size:0.95rem;
+        }
+        .menu-item i { width:20px; color:#003161; }
+        .menu-item:hover, .menu-item.active { background:#003161; color:white; }
+        .menu-item:hover i, .menu-item.active i { color:#C7953E; }
+        .menu-divider { border:none; border-top:1px solid #f0f0f0; margin:0.5rem 0; }
+        .main-content { margin-left:260px; margin-top:60px; padding:2rem; min-height:calc(100vh - 60px); }
+        .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; }
+        .page-title { color:#003161; font-size:1.6rem; display:flex; align-items:center; gap:10px; }
+
+        .event-info-card {
+            background: white; border-radius:10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 1.5rem; margin-bottom: 1.5rem;
+            border-left: 4px solid #C7953E;
+            display: flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;
+        }
+        .event-info-card h3 { color:#003161; font-size:1.2rem; margin-bottom:0.5rem; }
+        .event-meta { display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:0.5rem; }
+        .event-meta span { color:#666; font-size:0.9rem; display:flex; align-items:center; gap:6px; }
+        .event-meta span i { color:#C7953E; }
+        .stat-badge {
+            background:#C7953E; color:#003161;
+            padding:0.7rem 1.4rem; border-radius:8px;
+            font-weight:700; display:flex; align-items:center; gap:8px;
+            font-size:1rem; white-space:nowrap;
+        }
+
+        .table-card { background:white; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.08); overflow:hidden; }
+        .table-card-header {
+            background:#003161; color:#C7953E;
+            padding:1rem 1.5rem;
+            display:flex; align-items:center; gap:10px;
+            font-weight:600; font-size:1rem;
+        }
+        .table-container { max-height:500px; overflow-y:auto; }
+        table { width:100%; border-collapse:collapse; }
+        thead { position:sticky; top:0; z-index:10; }
+        th { background:#003161; color:#C7953E; padding:0.9rem 1rem; text-align:left; font-weight:600; font-size:0.9rem; }
+        td { padding:0.9rem 1rem; border-bottom:1px solid #f5f5f5; font-size:0.9rem; color:#444; vertical-align:middle; }
+        tr:hover td { background:#f0f4f8; }
+        tr:last-child td { border-bottom:none; }
+
+        .avatar {
+            width:38px; height:38px; border-radius:50%;
+            background:linear-gradient(135deg,#003161,#004080);
+            color:#C7953E; display:inline-flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:0.85rem; flex-shrink:0;
+        }
+        .user-cell { display:flex; align-items:center; gap:10px; }
+
+        .empty-state { text-align:center; padding:4rem; color:#999; }
+        .empty-state i { font-size:3.5rem; color:#ddd; display:block; margin-bottom:1rem; }
+
+        .btn {
+            padding:0.5rem 1rem; border:none; border-radius:6px;
+            cursor:pointer; text-decoration:none;
+            display:inline-flex; align-items:center; gap:6px;
+            font-size:0.85rem; font-family:inherit; transition:all 0.3s;
+        }
+        .btn-secondary { background:#f0f0f0; color:#555; font-weight:600; }
+        .btn-secondary:hover { background:#e0e0e0; transform:translateY(-1px); }
+
+        @media (max-width:768px) { .burger-menu { transform:translateX(-100%); } .main-content { margin-left:0; } }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container mt-4">
-    <div class="card p-4">
-        <div class="d-flex justify-content-between mb-3">
-            <h2>Réservations : {{ event.title }}</h2>
-            <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary">← Retour</a>
-        </div>
+<body>
 
-        <p class="text-muted">{{ event.reservations|length }} réservation(s) / {{ event.seats }} places</p>
-
-        {% if event.reservations is empty %}
-            <div class="alert alert-info">Aucune réservation pour cet événement.</div>
-        {% else %}
-            <table class="table table-striped">
-                <thead>
-                    <tr><th>#</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Date réservation</th></tr>
-                </thead>
-                <tbody>
-                    {% for i, reservation in event.reservations %}
-                    <tr>
-                        <td>{{ i+1 }}</td>
-                        <td>{{ reservation.name }}</td>
-                        <td>{{ reservation.email }}</td>
-                        <td>{{ reservation.phone }}</td>
-                        <td>{{ reservation.createdAt|date('d/m/Y H:i') }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+<div class="admin-header">
+    <h1>
+        <div class="brand-icon"><span></span><span></span><span></span><span></span></div>
+        Mic Events — Admin
+    </h1>
+    <div class="user-info">
+        <span> {{ app.user ? app.user.getUserIdentifier() : 'Admin' }}</span>
+        <a href="{{ path('admin_logout') }}"> Logout</a>
     </div>
 </div>
+
+<div class="burger-menu">
+    <a href="{{ path('admin_dashboard') }}" class="menu-item">
+         Dashboard
+    </a>
+    <a href="{{ path('admin_events') }}" class="menu-item active">
+         Events
+    </a>
+    <a href="{{ path('admin_event_new') }}" class="menu-item">
+         New Event
+    </a>
+    <hr class="menu-divider">
+    <a href="{{ path('home') }}" class="menu-item">
+         View Site
+    </a>
+    <a href="{{ path('admin_logout') }}" class="menu-item">
+        Logout
+    </a>
+</div>
+
+<!-- MAIN -->
+<div class="main-content">
+
+    <div class="page-header">
+        <h2 class="page-title">
+             Reservations
+        </h2>
+        <a href="{{ path('admin_events') }}" class="btn btn-secondary">
+             Back to Events
+        </a>
+    </div>
+
+    <div class="event-info-card">
+        <div>
+            <h3>{{ event.title }}</h3>
+            <div class="event-meta">
+                <span> {{ event.date|date('F d, Y H:i') }}</span>
+                <span> {{ event.location }}</span>
+                <span>{{ event.seats }} seats total</span>
+                <span> {{ event.availableSeats }} available</span>
+            </div>
+        </div>
+        <div class="stat-badge">
+            {{ event.reservations|length }} Reservation{{ event.reservations|length != 1 ? 's' : '' }}
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-card-header">
+            All Reservations for "{{ event.title }}"
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th> Name</th>
+                        <th> Email</th>
+                        <th> Phone</th>
+                        <th> Reserved At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for reservation in event.reservations %}
+                    <tr>
+                        <td style="color:#999; font-weight:300;">{{ loop.index }}</td>
+                        <td>
+                            <div class="user-cell">
+                              {{ reservation.name }}
+                            </div>
+                        </td>
+                        <td>
+                            <a href="mailto:{{ reservation.email }}" style="color:#003161; text-decoration:none;">
+                                {{ reservation.email }}
+                            </a>
+                        </td>
+                        <td>
+                            
+                            {{ reservation.phone }}
+                        </td>
+                        <td>
+                            <span style="background:#e8f5e9; color:#2e7d32; padding:3px 10px; border-radius:20px; font-size:0.82rem; font-weight:600;">
+                                {{ reservation.createdAt|date('d/m/Y H:i') }}
+                            </span>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <p style="font-size:1.1rem; margin-bottom:0.5rem;">No reservations yet</p>
+                                <p style="font-size:0.9rem;">Reservations will appear here once users book this event.</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>

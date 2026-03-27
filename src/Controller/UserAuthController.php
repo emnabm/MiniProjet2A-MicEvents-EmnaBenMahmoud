@@ -44,11 +44,11 @@ class UserAuthController extends AbstractController
             $confirm = $request->request->get('password_confirm', '');
 
             if (empty($email) || empty($username) || empty($password)) {
-                $error = 'Tous les champs sont obligatoires.';
+                $error = 'All fields are required.';
             } elseif ($password !== $confirm) {
-                $error = 'Les mots de passe ne correspondent pas.';
+                $error = 'Passwords dont match';
             } elseif ($userRepository->findOneBy(['email' => $email])) {
-                $error = 'Cet email est déjà utilisé.';
+                $error = 'Email already used';
             } else {
                 $user = new User();
                 $user->setEmail($email);
@@ -56,7 +56,7 @@ class UserAuthController extends AbstractController
                 $user->setPassword($passwordHasher->hashPassword($user, $password));
                 $userRepository->save($user, true);
 
-                $this->addFlash('success', 'Compte créé ! Connectez-vous.');
+                $this->addFlash('success', 'Account created ! Connect');
                 return $this->redirectToRoute('user_login');
             }
         }

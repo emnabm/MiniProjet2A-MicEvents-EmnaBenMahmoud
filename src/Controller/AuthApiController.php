@@ -37,12 +37,12 @@ class AuthApiController extends AbstractController
         $username = $data['username'] ?? null;
 
         if (!$email || !$password || !$username) {
-            return $this->json(['error' => 'Email, username et password requis'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['error' => 'Email, username & password required'], Response::HTTP_BAD_REQUEST);
         }
 
         $existing = $this->userRepository->findOneBy(['email' => $email]);
         if ($existing) {
-            return $this->json(['error' => 'Email déjà utilisé'], Response::HTTP_CONFLICT);
+            return $this->json(['error' => 'Email already used'], Response::HTTP_CONFLICT);
         }
 
         $user = new User();
@@ -74,7 +74,7 @@ class AuthApiController extends AbstractController
         $email = $data['email'] ?? null;
 
         if (!$email) {
-            return $this->json(['error' => 'Email requis'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['error' => 'Email required'], Response::HTTP_BAD_REQUEST);
         }
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
@@ -106,7 +106,7 @@ class AuthApiController extends AbstractController
 
         $user = $this->userRepository->findOneBy(['email' => $email]);
         if (!$user || !$credential) {
-            return $this->json(['error' => 'Données invalides'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['error' => 'Invalid data'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -152,7 +152,7 @@ class AuthApiController extends AbstractController
         $credential = $data['credential'] ?? null;
 
         if (!$credential) {
-            return $this->json(['error' => 'Credential requis'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['error' => 'Required credentials'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -160,7 +160,7 @@ class AuthApiController extends AbstractController
             $storedCredential = $this->credentialRepository->findByCredentialId($credentialId);
 
             if (!$storedCredential) {
-                return $this->json(['error' => 'Credential non trouvé'], Response::HTTP_UNAUTHORIZED);
+                return $this->json(['error' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
             }
 
             $this->webAuthnService->verifyAuthentication(
@@ -194,7 +194,7 @@ class AuthApiController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user instanceof User) {
-            return $this->json(['error' => 'Non authentifié'], Response::HTTP_UNAUTHORIZED);
+            return $this->json(['error' => 'Not authentified'], Response::HTTP_UNAUTHORIZED);
         }
 
         return $this->json([

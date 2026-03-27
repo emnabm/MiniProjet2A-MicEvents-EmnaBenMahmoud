@@ -61,6 +61,4 @@ docker-compose exec php php bin/console doctrine:schema:update --force
 ```
 
 ### Créer le compte admin
-Visiter `http://127.0.0.1:8000/admin/setup` une seule fois.
-- **Username** : `admin`
-- **Password** : `admin2026`
+Visiter `http://127.0.0.1:8000/admin/setup` une seule fois pour creer un admin
