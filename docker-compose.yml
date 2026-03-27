@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: micevent_php
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=1
+      - DATABASE_URL=mysql://root:root@db:3306/event_reservation?serverVersion=8.0&charset=utf8mb4
+      - JWT_PASSPHRASE=monapp2026
+      - APP_DOMAIN=localhost
+      - WEBAUTHN_RP_NAME=Event Reservation App
+    volumes:
+      - .:/var/www
+      - ./config/jwt:/var/www/config/jwt:ro
+    depends_on:
+      - db
+    networks:
+      - micevent_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: micevent_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public:/var/www/public:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - php
+    networks:
+      - micevent_network
+
+  db:
+    image: mysql:8.0
+    container_name: micevent_db
+    environment:
+      MYSQL_DATABASE: event_reservation
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - micevent_network
+
+networks:
+  micevent_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
